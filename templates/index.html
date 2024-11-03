@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go + HTMX Project</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body>
+    <h1>Welcome to Go + HTMX</h1>
+    <button hx-get="/load" hx-trigger="click">Load More Content</button>
+
+    <div id="content"></div>
+</body>
+</html>
