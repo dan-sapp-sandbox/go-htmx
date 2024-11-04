@@ -8,7 +8,7 @@ import (
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	pokemons, err := api.api()
+	pokemons, err := Api()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -25,9 +25,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func test() {
-	log.Println("test print")
-}
+// func test() {
+// 	log.Println("test print")
+// }
 
 func main() {
 	http.HandleFunc("/", indexHandler)

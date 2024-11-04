@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ type Pokemon struct {
 }
 
 // api fetches data from the API and returns a list of Pokemon structs.
-func api() ([]Pokemon, error) {
+func Api() ([]Pokemon, error) {
 	url := "https://node-server-seven-chi.vercel.app/pokemon"
 
 	resp, err := http.Get(url)
