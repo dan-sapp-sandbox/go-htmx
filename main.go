@@ -1,32 +1,36 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	t, err := template.ParseFiles("templates/" + tmpl)
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	pokemons, err := api.api()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	t.Execute(w, data)
+
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error parsing template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.Execute(w, pokemons); err != nil {
+		http.Error(w, fmt.Sprintf("error executing template: %v", err), http.StatusInternalServerError)
+	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index.html", nil)
-}
-
-func loadHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte("<p>This content was loaded with HTMX!</p>"))
+func test() {
+	log.Println("test print")
 }
 
 func main() {
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/load", loadHandler) // New HTMX endpoint
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Println("Server is running on http://localhost:8080")
