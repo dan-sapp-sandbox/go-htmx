@@ -9,8 +9,9 @@ import (
 
 // Pokemon represents the structure of each Pokemon entry.
 type Pokemon struct {
-	SpriteUrl string `json:"spriteUrl"` // URL for the image
-	Name      string `json:"name"`      // Alt text or name for the image
+	ImageBlob string `json:"imageBlob"`
+	Name      string `json:"name"`
+	ID        int    `json:"pokedexId"`
 }
 
 // api fetches data from the API and returns a list of Pokemon structs.

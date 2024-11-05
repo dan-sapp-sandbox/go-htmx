@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,6 +14,24 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	queryIds := r.URL.Query().Get("id")
+	filteredPokemons := []Pokemon{}
+
+	if queryIds != "" {
+		idList := strings.Split(queryIds, ",")
+		for _, p := range pokemons {
+			for _, id := range idList {
+				if strconv.Itoa(p.ID) == id {
+					filteredPokemons = append(filteredPokemons, p)
+					break
+				}
+			}
+		}
+	} else {
+		// If no query parameter, you could return an empty list or all pokemons
+		filteredPokemons = pokemons // Replace with an empty list if needed
 	}
 
 	tmpl, err := template.ParseFiles("templates/index.html")
@@ -24,10 +44,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("error executing template: %v", err), http.StatusInternalServerError)
 	}
 }
-
-// func test() {
-// 	log.Println("test print")
-// }
 
 func main() {
 	http.HandleFunc("/", indexHandler)

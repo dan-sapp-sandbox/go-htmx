@@ -8,18 +8,36 @@
   <script src="https://unpkg.com/htmx.org@1.8.4"></script>
   <link rel="stylesheet" href="../static/css/global.css" />
   <link rel="stylesheet" href="../static/css/grids.css" />
+  <script src="../static/js/utils.js"></script>
 </head>
 
 <body>
   <div class="header"></div>
   <div class="main">
     <h1>Pokemon List</h1>
+    <!-- <div class="container">
+      <div class="row">
+        {{range .}}
+        <div onclick="updateQueryParams('{{.ID}}')" class="pokemon-card col-2">
+          {{if .ImageBlob}}
+          <img loading="lazy" class="pokemon-image" src="data:image/png;base64,{{.ImageBlob}}" alt="{{.Name}}" />
+          {{else}}
+          <p>Image not available</p>
+          {{end}}
+        </div>
+        {{end}}
+      </div>
+    </div> -->
     <div class="container">
       <div class="row">
         {{range .}}
-        <div hx-get="/test" class="pokemon-card col-2" >
-          <img loading="lazy" class="pokemon-image" src="{{.SpriteUrl}}" alt="{{.Name}}" />
-          <!-- <p class="pokemon-label">{{.Name}}</p> -->
+        <div onclick="updateQueryParams('{{.ID}}')" class="pokemon-card col-2">
+          {{if .ImageBlob}}
+          <img loading="lazy" class="pokemon-image" src="data:image/png;base64,{{.ImageBlob}}" alt="{{.Name}}" />
+          {{else}}
+          <p>Image not available</p>
+          {{end}}
+          <!-- <p class="pokemon-label">{{.ImageBlob}}</p> -->
         </div>
         {{end}}
       </div>
