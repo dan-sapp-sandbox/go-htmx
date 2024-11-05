@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"fmt"
@@ -41,6 +41,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.Execute(w, pokemons); err != nil {
 		http.Error(w, fmt.Sprintf("error executing template: %v", err), http.StatusInternalServerError)
 	}
+}
+
+// Exported function for Vercel
+func Handler(w http.ResponseWriter, r *http.Request) {
+	indexHandler(w, r)
 }
 
 func main() {
