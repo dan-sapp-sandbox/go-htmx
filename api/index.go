@@ -1,36 +1,54 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 )
 
+// Pokemon represents the structure of each Pokemon entry.
+type Pokemon struct {
+	ImageBlob string `json:"imageBlob"`
+	Name      string `json:"name"`
+	ID        int    `json:"pokedexId"`
+}
+
+// api fetches data from the API and returns a list of Pokemon structs.
+func api() ([]Pokemon, error) {
+	url := "https://node-server-seven-chi.vercel.app/pokemon"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("error making GET request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error: status code %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	var pokemons []Pokemon
+	if err := json.Unmarshal(body, &pokemons); err != nil {
+		return nil, fmt.Errorf("error unmarshalling JSON: %v", err)
+	}
+
+	return pokemons, nil
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	pokemons, err := Api()
+	pokemons, err := api()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// queryIds := r.URL.Query().Get("id")
-	// filteredPokemons := []Pokemon{}
-
-	// if queryIds != "" {
-	// 	idList := strings.Split(queryIds, ",")
-	// 	for _, p := range pokemons {
-	// 		for _, id := range idList {
-	// 			if strconv.Itoa(p.ID) == id {
-	// 				filteredPokemons = append(filteredPokemons, p)
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// } else {
-	// 	// If no query parameter, you could return an empty list or all pokemons
-	// 	filteredPokemons = pokemons // Replace with an empty list if needed
-	// }
 
 	tmpl, err := template.ParseFiles("public/index.html")
 	if err != nil {
@@ -45,10 +63,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 // Exported function for Vercel
 func Handler(w http.ResponseWriter, r *http.Request) {
-	indexHandler(w, r)
+	http.HandleFunc("/", indexHandler)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	log.Println("Server is running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func main() {
+func Main() {
 	http.HandleFunc("/", indexHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
